@@ -1,27 +1,21 @@
-const http = require("http");
-const body_parser = require("body-parser");
-const express = require("express");
-const adminRoutes = require("./routes/adminRoutes");
-const shopRoutes = require("./routes/shopRoutes");
+const path = require('path');
+
+const express = require('express');
+const bodyParser = require('body-parser');
 
 const app = express();
 
-//Middleware function to parse url body
-app.use(
-  body_parser.urlencoded({
-    extended: false,
-  })
-);
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 
-app.use(adminRoutes);
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
-/* app.use((request, response, next) => {
-  console.log("In another middleware ");
-  response.send("Hello i am from middleware stack !!!");
-}); */
+app.use((req, res, next) => {
+    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+});
 
 app.listen(3000);
-
-//const server = http.createServer(app);
-//server.listen(4000);
